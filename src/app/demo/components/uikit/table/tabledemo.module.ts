@@ -14,6 +14,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
 import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
 	imports: [
@@ -30,8 +31,9 @@ import { RatingModule } from 'primeng/rating';
 		MultiSelectModule,
 		DropdownModule,
 		ProgressBarModule,
-		ToastModule
+		ToastModule,
 	],
-	declarations: [TableDemoComponent]
+	declarations: [TableDemoComponent],
+	providers: [MessageService]
 })
 export class TableDemoModule { }

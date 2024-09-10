@@ -15,6 +15,7 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
@@ -22,7 +23,12 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
     providers: [
         { provide: LocationStrategy, useClass: PathLocationStrategy },
         CountryService, CustomerService, EventService, IconService, NodeService,
-        PhotoService, ProductService, provideFirebaseApp(() => initializeApp({"projectId":"agronom-f15b4","appId":"1:104468609284:web:9eccfa8386de057d81b851","storageBucket":"agronom-f15b4.appspot.com","apiKey":"AIzaSyA2rKNqDK7QenWSI0iO8BBnTLFERx5AXQQ","authDomain":"agronom-f15b4.firebaseapp.com","messagingSenderId":"104468609284"})), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideStorage(() => getStorage())
+        PhotoService, ProductService, MessageService,
+        provideFirebaseApp(() => initializeApp({"projectId":"agronom-f15b4","appId":"1:104468609284:web:9eccfa8386de057d81b851","storageBucket":"agronom-f15b4.appspot.com","apiKey":"AIzaSyA2rKNqDK7QenWSI0iO8BBnTLFERx5AXQQ","authDomain":"agronom-f15b4.firebaseapp.com","messagingSenderId":"104468609284"})), 
+        provideAuth(() => getAuth()), 
+        provideFirestore(() => getFirestore()), 
+        provideStorage(() => getStorage())
+
     ],
     bootstrap: [AppComponent],
 })

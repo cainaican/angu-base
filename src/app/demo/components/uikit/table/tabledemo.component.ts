@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { Customer, Representative } from 'src/app/demo/api/customer';
 import { CustomerService } from 'src/app/demo/service/customer.service';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 import { Table } from 'primeng/table';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { collection, Firestore, getDocs, query, where } from '@angular/fire/firestore';
+import { from, map } from 'rxjs';
 
 interface expandedRows {
     [key: string]: boolean;
@@ -15,6 +17,17 @@ interface expandedRows {
     providers: [MessageService, ConfirmationService]
 })
 export class TableDemoComponent implements OnInit {
+
+    private _store = inject(Firestore);
+    private _messageService = inject(MessageService);
+
+    employees = signal<any[]>(null) ;
+    employeesTableHeaders: any[] = [
+        {name: 'Имя'},
+        {name: 'Фамилия'},
+        {name: 'Возраст'},
+        {name: 'Профессия'},
+    ];
 
     customers1: Customer[] = [];
 
@@ -46,9 +59,29 @@ export class TableDemoComponent implements OnInit {
 
     @ViewChild('filter') filter!: ElementRef;
 
-    constructor(private customerService: CustomerService, private productService: ProductService) { }
+    constructor(private customerService: CustomerService, private productService: ProductService) {
+        
+        
+    }
 
     ngOnInit() {
+
+        const emplyee_query = query(collection(this._store, "employees"));
+
+        from(getDocs(emplyee_query))
+        .subscribe({
+            next: (data) => {
+                if (data) {
+                    this.employees.set((data as any).docs.map(snapshot => snapshot.data()) as any[]);
+                    console.log(this.employees().length)
+                }
+            },
+            error: (err) => {
+                this._messageService.add({data: "Ошибка при получении данных о работниках",detail: 'Ошибка'})
+            }
+        })
+            
+
         this.customerService.getCustomersLarge().then(customers => {
             this.customers1 = customers;
             this.loading = false;

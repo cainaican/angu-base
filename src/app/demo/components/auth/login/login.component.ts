@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { AuthService } from './service/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -17,7 +18,15 @@ export class LoginComponent {
 
     valCheck: string[] = ['remember'];
 
+    email!: string;
     password!: string;
 
-    constructor(public layoutService: LayoutService) { }
+    constructor(
+        public layoutService: LayoutService,
+        public authService: AuthService
+    ) { }
+
+    login() {
+        this.authService.login({login: this.email, password: this.password});
+    }
 }
