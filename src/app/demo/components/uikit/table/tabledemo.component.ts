@@ -5,9 +5,11 @@ import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 import { Table } from 'primeng/table';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { collection, Firestore, getDocs, query, where } from '@angular/fire/firestore';
+import { collection, doc, Firestore, getDocs, query, setDoc, where } from '@angular/fire/firestore';
 import { from, map } from 'rxjs';
-
+import { Database, ref, set } from '@angular/fire/database';
+import uniqid from 'uniqid';
+import { TableModel } from './table-model/table.model';
 interface expandedRows {
     [key: string]: boolean;
 }
@@ -18,154 +20,67 @@ interface expandedRows {
 })
 export class TableDemoComponent implements OnInit {
 
-    private _store = inject(Firestore);
-    private _messageService = inject(MessageService);
+  private _store = inject(Firestore);
+  private _messageService = inject(MessageService);
 
-    employees = signal<any[]>(null) ;
-    employeesTableHeaders: any[] = [
-        {name: 'Имя'},
-        {name: 'Фамилия'},
-        {name: 'Возраст'},
-        {name: 'Профессия'},
-    ];
+  employees = signal<any[]>(null) ;
+  employeesTableHeaders: any[] = [
+    {name: 'Имя'},
+    {name: 'Фамилия'},
+    {name: 'Возраст'},
+    {name: 'Профессия'},
+  ];
 
-    customers1: Customer[] = [];
+  loading: boolean = true;
 
-    customers2: Customer[] = [];
+  tableModel = null;
 
-    customers3: Customer[] = [];
+  ngOnInit() {
 
-    selectedCustomers1: Customer[] = [];
+    const emplyee_query = query(collection(this._store, "employees"));
 
-    selectedCustomer: Customer = {};
-
-    representatives: Representative[] = [];
-
-    statuses: any[] = [];
-
-    products: Product[] = [];
-
-    rowGroupMetadata: any;
-
-    expandedRows: expandedRows = {};
-
-    activityValues: number[] = [0, 100];
-
-    isExpanded: boolean = false;
-
-    idFrozen: boolean = false;
-
-    loading: boolean = true;
-
-    @ViewChild('filter') filter!: ElementRef;
-
-    constructor(private customerService: CustomerService, private productService: ProductService) {
-        
-        
-    }
-
-    ngOnInit() {
-
-        const emplyee_query = query(collection(this._store, "employees"));
-
-        from(getDocs(emplyee_query))
-        .subscribe({
-            next: (data) => {
-                if (data) {
-                    this.employees.set((data as any).docs.map(snapshot => snapshot.data()) as any[]);
-                    console.log(this.employees().length)
-                }
-            },
-            error: (err) => {
-                this._messageService.add({data: "Ошибка при получении данных о работниках",detail: 'Ошибка'})
-            }
-        })
-            
-
-        this.customerService.getCustomersLarge().then(customers => {
-            this.customers1 = customers;
+    from(getDocs(emplyee_query))
+    .subscribe({
+        next: (data) => {
+          if (data) {
+            this.employees.set((data as any).docs.map(snapshot => snapshot.data()) as any[]);
+            console.log(this.employees())
             this.loading = false;
-
-            // @ts-ignore
-            this.customers1.forEach(customer => customer.date = new Date(customer.date));
-        });
-        this.customerService.getCustomersMedium().then(customers => this.customers2 = customers);
-        this.customerService.getCustomersLarge().then(customers => this.customers3 = customers);
-        this.productService.getProductsWithOrdersSmall().then(data => this.products = data);
-
-        this.representatives = [
-            { name: 'Amy Elsner', image: 'amyelsner.png' },
-            { name: 'Anna Fali', image: 'annafali.png' },
-            { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-            { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-            { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-            { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-            { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-            { name: 'Onyama Limba', image: 'onyamalimba.png' },
-            { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-            { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-        ];
-
-        this.statuses = [
-            { label: 'Unqualified', value: 'unqualified' },
-            { label: 'Qualified', value: 'qualified' },
-            { label: 'New', value: 'new' },
-            { label: 'Negotiation', value: 'negotiation' },
-            { label: 'Renewal', value: 'renewal' },
-            { label: 'Proposal', value: 'proposal' }
-        ];
-    }
-
-    onSort() {
-        this.updateRowGroupMetaData();
-    }
-
-    updateRowGroupMetaData() {
-        this.rowGroupMetadata = {};
-
-        if (this.customers3) {
-            for (let i = 0; i < this.customers3.length; i++) {
-                const rowData = this.customers3[i];
-                const representativeName = rowData?.representative?.name || '';
-
-                if (i === 0) {
-                    this.rowGroupMetadata[representativeName] = { index: 0, size: 1 };
-                }
-                else {
-                    const previousRowData = this.customers3[i - 1];
-                    const previousRowGroup = previousRowData?.representative?.name;
-                    if (representativeName === previousRowGroup) {
-                        this.rowGroupMetadata[representativeName].size++;
-                    }
-                    else {
-                        this.rowGroupMetadata[representativeName] = { index: i, size: 1 };
-                    }
-                }
-            }
+          }
+        },
+        error: (err) => {
+          this._messageService.add({data: "Ошибка при получении данных о работниках",detail: 'Ошибка'})
         }
-    }
+    })
+        
+  }
 
-    expandAll() {
-        if (!this.isExpanded) {
-            this.products.forEach(product => product && product.name ? this.expandedRows[product.name] = true : '');
+  get products(): any[] {
+    return this.tableModel.tbody();
+  }
 
-        } else {
-            this.expandedRows = {};
-        }
-        this.isExpanded = !this.isExpanded;
-    }
+  saveTable(data: {
+    tableName: string,
+    fields: object
+  }) {
 
-    formatCurrency(value: number) {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    }
+    const id = uniqid();
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
+    
+    from(setDoc(doc(this._store, data.tableName, id), data.fields)).subscribe({
+      next: (data) => {
+        debugger
+      },
+      error: (data) => {
+        debugger
+      }
+    })
+  }
 
-    clear(table: Table) {
-        table.clear();
-        this.filter.nativeElement.value = '';
-    }
+  newTable(): void {
+    this.tableModel = new TableModel();
+  }
+
+
     
 }
