@@ -90,11 +90,11 @@
           responsiveLayout="scroll">
             <ng-template pTemplate="header">
               <tr>
-                @for(th of tableModel.theadValues; track $index){
-                  <th style="min-width: 12rem">
+                @for(th of tableModel.theadValues; track $index; let i = $index){
+                  <th style="min-width: 12rem" (dblclick)="tableModel.dblclickOnTheadItem($event, tableModel.thead()[i])">
                     <div class="flex justify-content-between align-items-center">
-                      {{th}}
-                      <p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+						<input pInputText [disabled]="true" type="text" [(ngModel)]="tableModel.thead()[i].name">
+                      	<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
                     </div>
                   </th>
                 }
@@ -104,7 +104,7 @@
                 <tr>
                   @for(key of tableModel.theadKeys; track $index) {
                     <td>
-                      <input type="text" [(ngModel)]="row[key]">
+                      <input pInputText type="text" [(ngModel)]="row[key]">
                     </td>
                   }
                 </tr>

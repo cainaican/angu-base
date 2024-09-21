@@ -22,34 +22,34 @@ export class TableModel {
 
 
   addRow() {
-
     const newRow = {};
-
     for(let key of this.thead()) {
       newRow[key.name.toLowerCase().replaceAll(" ", "")] = Math.random().toFixed(4); 
     }
-
     this.tbody.set(
       [
       ...this.tbody(), newRow
       ]
     );
-
   }
 
   addColumn() {
-
-    const newCol = {name: 'Новый Заголовок', key: 'новыйзаголовок'};
-
+    const newCol = {name: 'Новый Заголовок', key: 'новый заголовок'};
     this.thead.set(
       [
       ...this.thead(), newCol
       ]
     );
+  }
 
-    console.log(this.thead());
-    console.log(this.tbody());
+  dblclickOnTheadItem(e: MouseEvent, thObject: Object) {
+    this.changeColumnName(e, thObject);
+  }
 
+  private changeColumnName(e: MouseEvent, th: Object) {
+      
+
+    
   }
 
 } 
