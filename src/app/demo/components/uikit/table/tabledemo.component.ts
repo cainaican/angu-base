@@ -1,13 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
-import { Customer, Representative } from 'src/app/demo/api/customer';
-import { CustomerService } from 'src/app/demo/service/customer.service';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
-import { Table } from 'primeng/table';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { collection, doc, Firestore, getDocs, query, setDoc, where } from '@angular/fire/firestore';
-import { from, map } from 'rxjs';
-import { Database, ref, set } from '@angular/fire/database';
+import { addDoc, collection, collectionData, doc, Firestore, getDocs, query, setDoc, where } from '@angular/fire/firestore';
+import { from, of, switchMap } from 'rxjs';
 import uniqid from 'uniqid';
 import { TableModel } from './table-model/table.model';
 interface expandedRows {
@@ -19,6 +13,8 @@ interface expandedRows {
     providers: [MessageService, ConfirmationService]
 })
 export class TableDemoComponent implements OnInit {
+
+  public tableToTake: string = "";
 
   private _store = inject(Firestore);
   private _messageService = inject(MessageService);
@@ -33,7 +29,7 @@ export class TableDemoComponent implements OnInit {
 
   loading: boolean = true;
 
-  tableModel = null;
+  tableModel: TableModel | null = null;
 
   ngOnInit() {
 
@@ -52,33 +48,63 @@ export class TableDemoComponent implements OnInit {
           this._messageService.add({data: "Ошибка при получении данных о работниках",detail: 'Ошибка'})
         }
     })
-        
   }
 
   get products(): any[] {
     return this.tableModel.tbody();
   }
 
-  saveTable(data: {
-    tableName: string,
-    fields: object
-  }) {
+  saveTable() {
 
+    const tableName = this.tableModel.newTableName;
+    const newtable = {
+      thead: this.tableModel.thead(),
+      tbody: this.tableModel.tbody()
+    }
+
+    const table_query = query(collection(this._store, tableName));
     const id = uniqid();
 
-    
-    from(setDoc(doc(this._store, data.tableName, id), data.fields)).subscribe({
-      next: (data) => {
-        debugger
-      },
-      error: (data) => {
-        debugger
-      }
-    })
+    from(getDocs(table_query)).pipe(
+      switchMap((data) => of(data?.docs[0]?.id)),
+      switchMap((existId) => 
+        existId ? 
+          from(setDoc(doc(this._store, tableName, existId), newtable))
+          : from(setDoc(doc(this._store, tableName, id), newtable))
+    )).subscribe({
+        next: (data) => {
+          debugger
+        },
+        error: (data) => {
+          debugger
+        }
+      })
+
+  }
+
+  getTable(tableName: string) {
+    const table_query = query(collection(this._store, tableName));
+    from(getDocs(table_query))
+      .subscribe({
+          next: (data) => {
+            if (data) {
+              const datas = (data as any).docs.map(snapshot => snapshot.data())[0];
+              this.tableModel = new TableModel((data.query as any).id, datas.thead, datas.tbody);
+              this.loading = false;
+            }
+          },
+          error: (err) => {
+            this._messageService.add({data: "Ошибка при получении данных о работниках",detail: 'Ошибка'})
+          }
+      })
   }
 
   newTable(): void {
     this.tableModel = new TableModel();
+  }
+
+  editTh(inp: HTMLInputElement) {
+    inp.disabled = !inp.disabled;
   }
 
 

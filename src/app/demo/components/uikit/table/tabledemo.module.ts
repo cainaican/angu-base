@@ -15,6 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
 import { MessageService } from 'primeng/api';
+import { ChipModule } from 'primeng/chip';
 
 @NgModule({
 	imports: [
@@ -32,6 +33,7 @@ import { MessageService } from 'primeng/api';
 		DropdownModule,
 		ProgressBarModule,
 		ToastModule,
+		ChipModule,
 	],
 	declarations: [TableDemoComponent],
 	providers: [MessageService]

@@ -1,12 +1,33 @@
 import { signal } from "@angular/core";
+import uniqid from 'uniqid';
+
+export interface IThead {
+  name: string;
+  key: string;
+}
+export interface ITBody {
+  name: string;
+  key: string;
+}
 
 export class TableModel {
-  thead = signal([
-    {name: 'Заголовок 1', key: 'заголовок1'},
-    {name: 'Заголовок 2', key: 'заголовок2'}
+
+  public newTableName = '';
+
+  thead = signal<IThead[]>([
+    {name: 'Заголовок 1', key: uniqid() + uniqid()},
+    {name: 'Заголовок 2', key: uniqid() + uniqid()}
   ]);
 
   tbody = signal([])
+
+  constructor(name?: string, thead?: IThead[], tbody?: ITBody[]) {
+    if (thead && tbody && name) {
+      this.thead.set(thead);
+      this.tbody.set(tbody);
+      this.newTableName = name;
+    }
+  }
 
   get theadValues(): string[] {
     return this.thead().map(el => el.name);
@@ -23,8 +44,8 @@ export class TableModel {
 
   addRow() {
     const newRow = {};
-    for(let key of this.thead()) {
-      newRow[key.name.toLowerCase().replaceAll(" ", "")] = Math.random().toFixed(4); 
+    for(let row of this.thead()) {
+      newRow[row.key] = ""; 
     }
     this.tbody.set(
       [
@@ -34,7 +55,7 @@ export class TableModel {
   }
 
   addColumn() {
-    const newCol = {name: 'Новый Заголовок', key: 'новый заголовок'};
+    const newCol = {name: 'Новый Заголовок', key: uniqid() + uniqid()};
     this.thead.set(
       [
       ...this.thead(), newCol

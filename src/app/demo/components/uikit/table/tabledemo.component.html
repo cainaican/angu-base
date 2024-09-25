@@ -57,7 +57,7 @@
     >
 	</button>
 
-  <button 
+  	<button 
 		pButton 
 		pRipple 
 		label="Добавить строку" 
@@ -66,19 +66,47 @@
     >
 	</button>
 
-  <button 
+  	<button 
 		pButton 
 		pRipple 
 		label="Добавить колонку" 
 		class="p-button"
-    (click)="tableModel.addColumn()"
+    	(click)="tableModel.addColumn()"
     >
 	</button>
 
+	<button 
+		pButton 
+		pRipple 
+		label="Сохранить" 
+		class="p-button"
+		(click)="saveTable()"
+	>
+	</button>
+
+	<button 
+		pButton 
+		pRipple 
+		label="Дай таблу" 
+		class="p-button"
+		(click)="getTable(tableToTake)"
+	>
+	</button>
+
+	<div class="card">
+		<span>Таблицу забрать</span>
+		<input pInputText type="text" [(ngModel)]="tableToTake">
+	</div>
+
   @if(tableModel) {
+
     <div class="col-12">
+		<div class="card">
+			<span>Название таблицы </span>
+			<input pInputText type="text" [(ngModel)]="tableModel.newTableName">
+		</div>
       <div class="card">
-        <p-table 
+        <p-table
           #dt1 
           [value]="tableModel.tbody()" 
           dataKey="1"
@@ -93,8 +121,11 @@
                 @for(th of tableModel.theadValues; track $index; let i = $index){
                   <th style="min-width: 12rem" (dblclick)="tableModel.dblclickOnTheadItem($event, tableModel.thead()[i])">
                     <div class="flex justify-content-between align-items-center">
-						<input pInputText [disabled]="true" type="text" [(ngModel)]="tableModel.thead()[i].name">
-                      	<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+						<input #inp pInputText [disabled]="true" type="text" [(ngModel)]="tableModel.thead()[i].name">
+						<div>
+							<i [class]="inp.disabled ? 'pi pi-pencil' : 'pi pi-save'" (click)="editTh(inp)" style="cursor: pointer;"></i>
+							<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+						</div>
                     </div>
                   </th>
                 }
@@ -108,7 +139,6 @@
                     </td>
                   }
                 </tr>
-
             </ng-template>
         </p-table>
       </div>
