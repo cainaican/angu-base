@@ -1,0 +1,77 @@
+<div class="grid">
+
+  	<button 
+		pButton 
+		pRipple 
+		label="Добавить строку" 
+		class="p-button"
+    (click)="tableModel().addRow()"
+    >
+	</button>
+
+  	<button 
+		pButton 
+		pRipple 
+		label="Добавить колонку" 
+		class="p-button"
+    	(click)="tableModel().addColumn()"
+    >
+	</button>
+
+	<button 
+		pButton 
+		pRipple 
+		label="Сохранить" 
+		class="p-button"
+		(click)="saveTable()"
+	>
+	</button>
+
+
+  @if(tableModel()) {
+
+    <div class="col-12">
+		<div class="card">
+			<span>Название таблицы </span>
+			<input pInputText type="text" [(ngModel)]="tableModel().newTableName">
+		</div>
+      <div class="card">
+        <p-table
+          #dt1 
+          [value]="tableModel().tbody()" 
+          dataKey="1"
+          [rows]="tableModel().length" 
+          [loading]="loading" 
+          [rowHover]="true" 
+          styleClass="p-datatable-gridlines" 
+          [globalFilterFields]="tableModel().theadValues" 
+          responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+              <tr>
+                @for(th of tableModel().theadValues; track $index; let i = $index){
+                  <th style="min-width: 12rem" (dblclick)="tableModel().dblclickOnTheadItem($event, tableModel().thead()[i])">
+                    <div class="flex justify-content-between align-items-center">
+						<input #inp pInputText [disabled]="true" type="text" [(ngModel)]="tableModel().thead()[i].name">
+						<div>
+							<i [class]="inp.disabled ? 'pi pi-pencil' : 'pi pi-save'" (click)="editTh(inp)" style="cursor: pointer;"></i>
+							<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+						</div>
+                    </div>
+                  </th>
+                }
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr>
+                  @for(key of tableModel().theadKeys; track $index) {
+                    <td>
+                      <input pInputText type="text" [(ngModel)]="row[key]">
+                    </td>
+                  }
+                </tr>
+            </ng-template>
+        </p-table>
+      </div>
+    </div>
+  }
+</div>

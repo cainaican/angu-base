@@ -16,6 +16,12 @@ import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
 import { MessageService } from 'primeng/api';
 import { ChipModule } from 'primeng/chip';
+import { TableViewComponent } from '../table-view/tableview.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DialogModule } from 'primeng/dialog';
+import { SidebarModule } from 'primeng/sidebar';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
 	imports: [
@@ -34,8 +40,12 @@ import { ChipModule } from 'primeng/chip';
 		ProgressBarModule,
 		ToastModule,
 		ChipModule,
+		DialogModule,
+		TooltipModule,
+		ConfirmDialogModule,
+		SidebarModule,
+		ConfirmPopupModule
 	],
-	declarations: [TableDemoComponent],
-	providers: [MessageService]
+	declarations: [TableDemoComponent, TableViewComponent],
 })
 export class TableDemoModule { }
