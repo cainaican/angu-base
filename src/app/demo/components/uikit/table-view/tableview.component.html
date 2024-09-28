@@ -1,5 +1,7 @@
 <div class="grid">
 
+  <div class="col-12">
+		<div class="card" style="display: flex; gap: 20px;">
   	<button 
 		pButton 
 		pRipple 
@@ -22,10 +24,12 @@
 		pButton 
 		pRipple 
 		label="Сохранить" 
-		class="p-button"
+    class="p-button-success"
 		(click)="saveTable()"
 	>
 	</button>
+  </div>  
+  </div>
 
 
   @if(tableModel()) {

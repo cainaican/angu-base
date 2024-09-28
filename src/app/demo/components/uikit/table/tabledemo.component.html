@@ -1,103 +1,62 @@
 <div class="grid">
 	<p-toast></p-toast>
-	<div class="col-12">
+	<div class="col-12" >
+		<div class="card" style="display: flex;
+				flex-wrap: wrap;
+				gap: 20px">
+			<button 
+			pButton 
+			pRipple 
+			label="Новая таблица" 
+			class="p-button"
+		(click)="newTable()"
+		>
+		</button>
+	
+		  <button 
+			pButton 
+			pRipple 
+			label="Добавить строку" 
+			class="p-button"
+			(click)="tableModel.addRow()"
+		>
+		</button>
+	
+		  <button 
+			pButton 
+			pRipple 
+			label="Добавить колонку" 
+			class="p-button"
+			(click)="tableModel.addColumn()"
+		>
+		</button>
+	
+		<button 
+			pButton 
+			pRipple 
+			label="Сохранить" 
+			class="p-button-success"
+			(click)="saveTable()"
+		>
+		</button>
+	
+		<!-- <button 
+			pButton 
+			pRipple 
+			label="Дай таблу" 
+			class="p-button"
+			(click)="getTable(tableToTake)"
+		>
+		</button>
+	
 		<div class="card">
-			<!-- <h5>Таблица работников</h5> -->
-			<!-- <p-table 
-			#dt1 
-			[value]="employees()" 
-			dataKey="id"
-			[rows]="employees().length" 
-			[loading]="loading" 
-			[rowHover]="true" 
-			styleClass="p-datatable-gridlines" 
-			[paginator]="true" 
-			[globalFilterFields]="['name','sirname','age','profession']" 
-			responsiveLayout="scroll">
-				<ng-template pTemplate="header">
-					<tr>
-						@for(emp of employeesTableHeaders; track emp.name){
-							<th style="min-width: 12rem">
-								<div class="flex justify-content-between align-items-center">
-									{{emp.name}}
-									<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
-								</div>
-							</th>
-						}
-					</tr>
-				</ng-template>
-				<ng-template pTemplate="body">
-					@for(emp of employees(); track emp.name) {
-						<tr>
-							<td>
-								{{emp.name}}
-							</td>
-							<td>
-								{{emp.sirname}}
-							</td>
-							<td>
-								{{emp.age}}
-							</td>
-							<td>
-								{{emp.profession}}
-							</td>
-						</tr>
-					}
-
-				</ng-template>
-			</p-table> -->
+			<span>Таблицу забрать</span>
+			<input pInputText type="text" [(ngModel)]="tableToTake">
+		</div> -->
 		</div>
 	</div>
 
-	<button 
-		pButton 
-		pRipple 
-		label="Новая таблица" 
-		class="p-button"
-    (click)="newTable()"
-    >
-	</button>
 
-  	<button 
-		pButton 
-		pRipple 
-		label="Добавить строку" 
-		class="p-button"
-    (click)="tableModel.addRow()"
-    >
-	</button>
-
-  	<button 
-		pButton 
-		pRipple 
-		label="Добавить колонку" 
-		class="p-button"
-    	(click)="tableModel.addColumn()"
-    >
-	</button>
-
-	<button 
-		pButton 
-		pRipple 
-		label="Сохранить" 
-		class="p-button"
-		(click)="saveTable()"
-	>
-	</button>
-
-	<button 
-		pButton 
-		pRipple 
-		label="Дай таблу" 
-		class="p-button"
-		(click)="getTable(tableToTake)"
-	>
-	</button>
-
-	<div class="card">
-		<span>Таблицу забрать</span>
-		<input pInputText type="text" [(ngModel)]="tableToTake">
-	</div>
 
   @if(tableModel) {
 

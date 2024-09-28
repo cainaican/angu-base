@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, inject, signal } from "@angular/core";
-import { Firestore, collection, getDocs, setDoc, doc, query } from "@angular/fire/firestore";
+import { Firestore, collection, getDocs, setDoc, doc, query, namedQuery } from "@angular/fire/firestore";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MessageService, ConfirmationService } from "primeng/api";
 import { from, switchMap, of } from "rxjs";
@@ -44,6 +44,7 @@ export class TableViewComponent implements OnInit {
               this.loading = false;
               if (!this.tableModel()) this.tableModel.set(new TableModel(mappedData[0].name, mappedData[0].thead, mappedData[0].tbody));
               if (this.tableModel()) {
+                this.tableModel().newTableName = mappedData[0].name ;
                 this.tableModel().thead.set(mappedData[0].thead);
                 this.tableModel().tbody.set(mappedData[0].tbody);
               }
@@ -58,11 +59,11 @@ export class TableViewComponent implements OnInit {
   }
 
   saveTable() {
-
     const tableName = this.tableModel().newTableName;
     const newtable = {
       thead: this.tableModel().thead(),
-      tbody: this.tableModel().tbody()
+      tbody: this.tableModel().tbody(),
+      name: tableName,
     }
 
     const table_query = query(collection(this._store, tableName));
@@ -76,7 +77,8 @@ export class TableViewComponent implements OnInit {
           : from(setDoc(doc(this._store, tableName, id), newtable))
     )).subscribe({
         next: (data) => {
-          debugger
+          this._messageService.add({detail: "Таблица" + tableName + 'успешно сохранена', summary: 'Сохранение', severity: "success"});
+          window.location.reload();
         },
         error: (data) => {
           debugger
